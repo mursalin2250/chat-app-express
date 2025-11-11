@@ -1,7 +1,18 @@
 import user from "./user.model.js";
+import { createdUserService } from "./user.service.js";
 
-export const findUser = async (req,res) => {
-    const users = await user.find();
+
+export const getAllUser = async (req,res) => {
+    const users = await user.find().select("+password");
+    if(!users){
+        res.send({message: "add user to view them."});
+    }
+    res.json(users);
+}
+
+export const getUser = async (req,res) => {
+    const {username} = req.params;
+    const users = await user.findOne({username}).select("+password");
     if(!users){
         res.send({message: "add user to view them."});
     }
@@ -9,11 +20,8 @@ export const findUser = async (req,res) => {
 }
 
 export const createUser = async (req,res) => {
-    const {name, email} = req.body;
-    
-    const create = await user.create({name, email});
-    
-    res.json(create);
+    const createdUser = createdUserService(req.body);
+    res.json({message: "user created successfully!", createdUser});
 }
 
 export const deleteUser = async (req,res) => {
