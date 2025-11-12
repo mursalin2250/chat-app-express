@@ -19,7 +19,7 @@ export const createdUserService = async (data) => {
 }
 
 export const userLoginService = async (data) => {
-    const user = await userModel.findOne({$or: [{username:data.username}, {email:data.email}]}).select("+token");
+    const user = await userModel.findOne({$or: [{username:data.username}, {email:data.email}]}).select("+password +token");
     if(!user){
         throw new Error("Invalid credentials!");
     }
@@ -27,22 +27,28 @@ export const userLoginService = async (data) => {
     if(!authPassword){
         throw new Error("Invalid credentials!");
     }
-    const token = jwt.sign(
-        {
-            userId: user._id,
-            username: user.username,
-            role: user.role
-        },
-        JWT_SECRET,
-        {expiresIn: ACCESS_TOKEN_EXPIRES_IN}
-    );
-    return {user,token};
+    let token = user.token;
+    const currentTime = Math.floor(Date.now() / 1000);
+    const decodedToken = jwt.decode(token);
+    if(!token || decodedToken.exp<currentTime){
+        token = jwt.sign(
+            {
+                userId: user._id,
+                username: user.username,
+                role: user.role
+            },
+            JWT_SECRET,
+            {expiresIn: ACCESS_TOKEN_EXPIRES_IN}
+        );
+        user.token = token;
+        await user.save();
+    }
+    return user;
 }
 
 export const getUserService = async (data) => {
     const {username} = data;
     const user = await userModel.findOne({username}).select("+password");
-    console.log(user);
     if(!user){
         throw new Error("User not found.");
     }
