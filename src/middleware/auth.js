@@ -10,13 +10,10 @@ export const tokenAuthentication = async (req,res,next) => {
         res.status(401).json({message: "Access deined. Token not found!"});
     }
     try {
-        const verifyToken = jwt.verify(token, JWT_SECRET);
-        const verified = verifyToken;
+        jwt.verify(token, JWT_SECRET);
         next();
     } catch (error) {
         res.status(403).json({message: "Invalid User Token"});
     }
-
-
-
 }
+
