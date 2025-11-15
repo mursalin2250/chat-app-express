@@ -47,8 +47,7 @@ export const userLoginService = async (data) => {
 }
 
 export const getUserService = async (data) => {
-    const {username} = data;
-    const user = await userModel.findOne({username}).select("-__v");
+    const user = await userModel.findOne({$or: [{username: data.username}, {email: data.email}]}).select("-__v");
     if(!user){
         throw new Error("User not found.");
     }
@@ -63,14 +62,21 @@ export const getAllUserService = async () => {
     return users;
 }
 
-export const updateUser = async (username, data) => {
+export const updateUserService = async (username, data) => {
 
     const user = await userModel.findOne({username});
 
     if(!user){
         throw new Error("User not found!");
     }
-    
+    const keys = Object.keys(data);
+    for(let i = 0; i < keys.length; i++){
+        const key = keys[i];
+        user[key] = data[key];
+    }
+
+    const updatedUser = await user.save();
+    return updatedUser;
 }
 
 export const deleteUserService = async (data) => {
