@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import express from "express";
 import { JWT_SECRET } from "../config/envConfig.js";
 
 export const tokenAuthentication = async (req,res,next) => {

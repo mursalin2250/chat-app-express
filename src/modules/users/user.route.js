@@ -8,7 +8,7 @@ router.post("/", createUser);
 router.post("/login", userLogin);
 router.get("/:value", tokenAuthentication, getUser);
 router.get("/", tokenAuthentication, getAllUser);
-router.post("/:username",updatedUser);
-router.delete("/:username", deleteUser);
+router.put("/:username", tokenAuthentication,updatedUser);
+router.delete("/:username", tokenAuthentication, deleteUser);
 
 export default router;

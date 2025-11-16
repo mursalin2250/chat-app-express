@@ -43,7 +43,9 @@ export const userLoginService = async (data) => {
         user.token = token;
         await user.save();
     }
-    return user;
+    const readyUser = user.toObject();
+    delete readyUser.password;
+    return readyUser;
 }
 
 export const getUserService = async (data) => {
@@ -64,7 +66,7 @@ export const getAllUserService = async () => {
 
 export const updateUserService = async (username, data) => {
 
-    const user = await userModel.findOne({username});
+    const user = await userModel.findOne(username);
 
     if(!user){
         throw new Error("User not found!");
@@ -72,6 +74,13 @@ export const updateUserService = async (username, data) => {
     const keys = Object.keys(data);
     for(let i = 0; i < keys.length; i++){
         const key = keys[i];
+        if(key == "role"){
+            throw new Error("Only admins can change the role!")
+        }
+        if(key == "password"){
+            const hashUpdatedPassword = await bcrypt.hash(data[key], 10);
+            data[key] = hashUpdatedPassword
+        }
         user[key] = data[key];
     }
 
