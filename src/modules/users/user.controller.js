@@ -1,4 +1,4 @@
-import { createdUserService, deleteUserService, getAllUserService, getUserService, updateUserService, userLoginService } from "./user.service.js";
+import { createdUserService, deleteUserService, forgetPasswordService, getAllUserService, getUserService, updateUserService, userLoginService } from "./user.service.js";
 
 export const createUser = async (req,res) => {
     try {
@@ -61,3 +61,13 @@ export const deleteUser = async (req,res) => {
     }
 }
 
+export const forgetPassword = async () => {
+    try {
+        const {email} = req.body;
+        const generatedOtp = await forgetPasswordService(email);
+        res.status(200).json({message: "OTP generated successfully! Enter the otp to verify and change the password!"})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.message});
+    }
+}

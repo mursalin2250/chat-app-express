@@ -27,6 +27,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         select: false
     }
+    ,otp: {
+        type: Number
+    }
 }, {timestamps: true});
  
 const user = mongoose.model('User', userSchema);

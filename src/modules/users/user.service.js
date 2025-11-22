@@ -96,3 +96,16 @@ export const deleteUserService = async (data) => {
     }
     return deleted;
 }
+
+export const forgetPasswordService = async (email) => {
+    const user = await userModel.findOne(email);
+    if(!user){
+        throw new Error("User not found.");
+    }
+    const generateOtp = Math.random()* 1000000;
+    const updateDB = userModel.findOneAndUpdate(generateOtp);
+    if(!updateDB){
+        throw new Error("There was a problem while generating the code.")
+    }
+    return user;
+}
